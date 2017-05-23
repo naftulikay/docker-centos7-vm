@@ -5,7 +5,7 @@ MAINTAINER Naftuli Kay <me@naftuli.wtf>
 ENV container=docker
 
 # install and configure systemd in a way that works in docker, see upstream centos:7 docs
-RUN yum -y update; yum clean all; \
+RUN yum -y update >/dev/null ; yum clean all >/dev/null ; \
   ( cd /lib/systemd/system/sysinit.target.wants/; for i in *; do \
     [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; \
   done ); \
@@ -20,7 +20,7 @@ RUN yum -y update; yum clean all; \
 # install ansible and system utilities
 RUN yum makecache fast >/dev/null \
  && yum -y install deltarpm epel-release initscripts >/dev/null \
- && yum -y update \
+ && yum -y update >/dev/null \
  && yum -y install ansible sudo which >/dev/null \
  && yum clean all >/dev/null
 
