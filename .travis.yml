@@ -25,3 +25,4 @@ notifications:
   email:
     on_success: never
     on_failure: never
+  webhooks: https://registry.hub.docker.com/u/naftulikay/centos-vm/trigger/${DOCKERHUB_TOKEN}/
