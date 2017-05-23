@@ -4,7 +4,10 @@ MAINTAINER Naftuli Kay <me@naftuli.wtf>
 
 ENV container=docker
 
-# install and configure systemd in a way that works in docker, see upstream centos:7 docs
+# install and configure systemd;
+# > [b]ut systemd starts tons of services in the container like udev, getty logins, ... I only want to run systemd,
+# > journald, [...] within the container
+# - Dan Walsh: https://developers.redhat.com/blog/2014/05/05/running-systemd-within-docker-container/
 RUN yum -y update >/dev/null ; yum clean all >/dev/null ; \
   ( cd /lib/systemd/system/sysinit.target.wants/; for i in *; do \
     [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; \
