@@ -16,8 +16,8 @@ docker run --detach --privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro naftu
 
 The container ID will be emitted by Docker and this can be used to execute commands in the Docker container/"VM".
 
-A lot of the work to discover what was necessary for systemd to run in Docker was be provided by the
-[SELinux Man Himself, Dan Walsh][dwalsh], in [some RedHat documentation][redhat-docker-systemd].
+A lot of the work to discover what was necessary for systemd to run in Docker was provided by the
+[SELinux Man Himself, Dan Walsh][dwalsh], in [a RedHat blog post][redhat-docker-systemd].
 
 ### Testing Ansible Roles
 
