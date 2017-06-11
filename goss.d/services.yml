@@ -4,6 +4,10 @@ service:
     enabled: true
     running: true
 
+  systemd-journald:
+    enabled: true
+    running: true
+
   # these two services are started on-demand
   systemd-hostnamed:
     enabled: true
@@ -12,7 +16,3 @@ service:
   systemd-timedated:
     enabled: true
     running: { or: [true, false] }
-
-  systemd-journald:
-    enabled: true
-    running: true
