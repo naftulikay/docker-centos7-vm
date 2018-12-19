@@ -1,0 +1,12 @@
+---
+version: '3'
+services:
+  centos7:
+    build: ./
+    container_name: centos7
+    image: naftulikay/centos7-vm:latest
+    # systemd will not boot without privileged
+    privileged: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    stop_grace_period: 1s

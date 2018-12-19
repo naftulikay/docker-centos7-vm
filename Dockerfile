@@ -5,29 +5,25 @@ MAINTAINER Naftuli Kay <me@naftuli.wtf>
 # systemd wants this: http://red.ht/2sPKSZA
 ENV container=docker
 
-# install ansible and system utilities
-RUN yum makecache fast >/dev/null \
- && yum -y install deltarpm epel-release initscripts >/dev/null \
- && yum -y update >/dev/null \
- && yum -y install ansible sudo which less >/dev/null \
- && yum clean all >/dev/null \
- # remove the machine id from the container; also disable targets that won't work in a container
- && rm -f /etc/machine-id \
-          /usr/lib/systemd/system/sysinit.target.wants/systemd-firstboot.service \
-          /usr/lib/systemd/system/local-fs.target.wants/systemd-remount-fs.service \
-          /usr/lib/systemd/system/sysinit.target.wants/systemd-machine-id-commit.service \
-          /etc/systemd/system/getty.target.wants/getty@tty1.service
+# allow man page installation
+RUN sed -i '/tsflags=nodocs/d' /etc/yum.conf
 
-# disable requiretty.
-RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers
+# install (reinstall in order to get man pages)
+RUN yum makecache fast >/dev/null \
+  && yum -y install deltarpm initscripts sudo which less >/dev/null \
+  && yum list installed -q | tail -n +2 | awk '{print $1;}' | xargs yum reinstall -y >/dev/null \
+  && yum clean all >/dev/null
+
+# configuration
+RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
+  && mkdir /etc/systemd/system/network.service.d/ \
+  && echo -e '[Unit]\nConditionVirtualization=!container' > /etc/systemd/system/network.service.d/99-docker.conf \
+  && rm -f /etc/machine-id \
+       /usr/lib/systemd/system/sysinit.target.wants/systemd-firstboot.service \
+       /usr/lib/systemd/system/multi-user.target.wants/getty.target
 
 # our own utility for awaiting systemd "boot" in the container
 COPY bin/systemd-await-target /usr/bin/systemd-await-target
 COPY bin/wait-for-boot /usr/bin/wait-for-boot
 
-# install local inventory file.
-RUN echo -e '[local]\nlocalhost ansible_connection=local' > /etc/ansible/hosts
-
-# systemd stuff
-VOLUME ["/sys/fs/cgroup"]
 ENTRYPOINT ["/usr/sbin/init"]

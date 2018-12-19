@@ -8,3 +8,6 @@ package:
     installed: true
   which:
     installed: true
+  # we installed this custom
+  bash-completion:
+    installed: true
