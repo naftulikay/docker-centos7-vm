@@ -7,7 +7,7 @@ A lightweight CentOS 7 VM in Docker, primarily used for integration testing of A
 The image and container can be built and started like so:
 
 ```
-$ docker build -t naftulikay/centos7-vm:latest
+$ docker build -t naftulikay/centos7-vm:latest ./
 $ docker run -d --name centos7 -v /sys/fs/cgroup:/sys/fs/cgroup:ro --privileged \
       naftulikay/centos7-vm:latest
 $ docker exec -it centos7 wait-for-boot
