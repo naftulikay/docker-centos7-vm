@@ -1,0 +1,6 @@
+---
+command:
+  'id -u -n':
+    exit-status: 0
+    stdout:
+      - container

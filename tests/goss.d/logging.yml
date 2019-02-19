@@ -1,4 +1,4 @@
 ---
 command:
-  'journalctl':
+  'sudo journalctl':
     exit-status: 0

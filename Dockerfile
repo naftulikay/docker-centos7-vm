@@ -10,7 +10,7 @@ RUN sed -i '/tsflags=nodocs/d' /etc/yum.conf
 
 # install (reinstall in order to get man pages)
 RUN yum makecache fast >/dev/null \
-  && yum -y install deltarpm initscripts sudo which less dbus >/dev/null \
+  && yum -y install deltarpm initscripts sudo which less dbus curl >/dev/null \
   && yum list installed -q | tail -n +2 | awk '{print $1;}' | xargs yum reinstall -y >/dev/null \
   && yum clean all >/dev/null
 
@@ -26,10 +26,17 @@ RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/' /etc/sudoers \
 COPY bin/systemd-await-target /usr/bin/systemd-await-target
 COPY bin/wait-for-boot /usr/bin/wait-for-boot
 
+# add our privilege escalation utility
+RUN curl -sSL -o /usr/sbin/escalator https://github.com/naftulikay/escalator/releases/download/v1.0.1/escalator-x86_64-unknown-linux-musl && \
+  chmod 7755 /usr/sbin/escalator
+
 # create a container user to simulate shelling into an unprivileged user account by default
 COPY --chown=root:root etc/sudoers.d/container /etc/sudoers.d
-RUN useradd container && chmod 0600 /etc/sudoers.d/container
+RUN useradd -m -s $(which bash) container && \
+  chown -R container:container /home/container && \
+  chmod 0600 /etc/sudoers.d/container
+
 USER container
 WORKDIR /home/container
 
-ENTRYPOINT ["sudo", "-n", "/usr/lib/systemd/systemd", "--system", "--unit=multi-user.target"]
+ENTRYPOINT ["/usr/sbin/escalator", "/usr/lib/systemd/systemd", "--", "--system", "--unit=multi-user.target"]
